@@ -235,29 +235,25 @@
             color: #4a5568;
         }
 
-        .progress-container {
-            margin: 20px 0;
-        }
-
         .progress-bar {
             width: 100%;
-            height: 10px;
+            height: 8px;
             background: #e2e8f0;
-            border-radius: 5px;
+            border-radius: 4px;
             overflow: hidden;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .progress-fill {
             height: 100%;
             background: linear-gradient(135deg, #48bb78, #38a169);
-            border-radius: 5px;
+            border-radius: 4px;
             transition: width 0.3s ease;
             width: 0%;
         }
 
         .log-container {
-            max-height: 400px;
+            max-height: 300px;
             overflow-y: auto;
             background: #1a202c;
             color: #e2e8f0;
@@ -281,17 +277,17 @@
             color: #fc8181;
         }
 
+        .log-entry.warning {
+            color: #f6ad55;
+        }
+
         .log-entry.info {
             color: #63b3ed;
         }
 
-        .log-entry.warning {
-            color: #f6e05e;
-        }
-
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin: 20px 0;
         }
@@ -302,6 +298,7 @@
             border-radius: 15px;
             text-align: center;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .stat-number {
@@ -319,141 +316,105 @@
             font-size: 0.9em;
         }
 
-        .settings-saved {
-            background: rgba(72, 187, 120, 0.1);
-            color: #2f855a;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.9em;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .batch-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .delay-input {
-            width: 80px !important;
+        .processing-row {
+            animation: pulse 1.5s ease-in-out infinite;
         }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+            0%, 100% { background: rgba(102, 126, 234, 0.05); }
+            50% { background: rgba(102, 126, 234, 0.15); }
         }
 
-        .processing-row {
-            animation: pulse 2s infinite;
-        }
-
-        .config-note {
-            background: rgba(237, 137, 54, 0.1);
-            border: 1px solid rgba(237, 137, 54, 0.3);
-            border-radius: 8px;
-            padding: 15px;
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
             margin: 15px 0;
-            font-size: 0.95em;
-            color: #c05621;
         }
 
-        .config-note strong {
-            display: block;
-            margin-bottom: 8px;
-            color: #9c4221;
+        .status-indicator {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Ethoca-Shopify Order Matcher</h1>
+            <h1>🎯 Ethoca-Shopify Order Matcher</h1>
             <p>Automated chargeback order identification and tagging system</p>
         </div>
 
         <div class="main-content">
-            <!-- Configuration Section - Moved to top -->
-            <div class="section">
-                <h2>⚙️ System Configuration</h2>
-                <div class="config-note">
-                    <strong>Production Settings:</strong>
-                    These settings are pre-configured for your MESA automation. Only change if instructed by technical support.
-                </div>
-                <div class="config-section">
-                    <div class="input-group">
-                        <label for="mesaWebhook">MESA Webhook URL</label>
-                        <input type="url" id="mesaWebhook" 
-                               value="https://webhooks.getmesa.com/v1/kindscience/trigger-webhook/68d23d6c8e8576d228006322/68d23d9f3c17bf0e010aa254.json?apikey=TNlzaM8sPt4TaCATVB9jz8ZObd5Q7HEC5e782u2U">
-                    </div>
-                    <div class="input-group">
-                        <label for="batchDelay">Processing Delay (seconds)</label>
-                        <input type="number" id="batchDelay" class="delay-input" value="1" min="0.5" max="5" step="0.5">
-                        <small style="color: #666; display: block; margin-top: 5px;">Delay between API calls to prevent rate limiting</small>
-                    </div>
-                </div>
-                <div class="config-section">
-                    <div class="input-group">
-                        <label for="recordLimit">Records to Process</label>
-                        <select id="recordLimit">
-                            <option value="1">1 Record (Testing)</option>
-                            <option value="5">5 Records (Quick Test)</option>
-                            <option value="10">10 Records (Small Batch)</option>
-                            <option value="20">20 Records (Medium Batch)</option>
-                            <option value="50">50 Records (Large Batch)</option>
-                            <option value="all" selected>All Records (Full Processing)</option>
-                        </select>
-                        <small style="color: #666; display: block; margin-top: 5px;">Limit processing for testing or partial runs</small>
-                    </div>
-                    <div class="input-group">
-                        <label style="opacity: 0.6;">Processing Status</label>
-                        <div style="padding: 12px 15px; background: #f7fafc; border-radius: 10px; border: 2px solid #e2e8f0;">
-                            <span id="processingStatus">Ready to process</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="settings-saved" id="settingsSaved">✅ Settings saved automatically</div>
-            </div>
-
             <!-- File Upload Section -->
             <div class="section">
-                <h2>📁 Load Ethoca Chargeback File</h2>
+                <h2>📁 Step 1: Load Ethoca File</h2>
                 <div class="file-upload">
                     <input type="file" id="ethocaFile" class="file-input" accept=".xlsx,.xls,.csv">
                     <label for="ethocaFile" class="file-button">
-                        📂 Select Ethoca Excel File (.xlsx/.xls/.csv)
+                        📂 Select Ethoca Chargeback File (.xlsx or .csv)
                     </label>
                 </div>
                 <div id="fileInfo" class="file-info" style="display: none;"></div>
             </div>
 
-            <!-- Action Buttons -->
+            <!-- Configuration Section -->
             <div class="section">
-                <h2>🚀 Processing Controls</h2>
-                <div class="batch-controls">
-                    <button class="action-button" id="processBtn" onclick="processFile()">
-                        ▶️ Start Order Matching & Tagging
+                <h2>⚙️ Step 2: Configure MESA Web Request</h2>
+                <div class="input-group">
+                    <label for="mesaWebhook">MESA Web Request URL</label>
+                    <input type="url" id="mesaWebhook" 
+                           placeholder="https://webhooks.getmesa.com/v1/kindscience/webrequest/..."
+                           value="https://webhooks.getmesa.com/v1/kindscience/webrequest/68fd0cacdb7be454c4073397/68fd0d1aad0774dd400758e9.json?apikey=TNlzaM8sPt4TaCATVB9jz8ZObd5Q7HEC5e782u2U">
+                </div>
+                
+                <div class="config-section">
+                    <div class="input-group">
+                        <label for="recordLimit">Number of Records to Process</label>
+                        <select id="recordLimit">
+                            <option value="1">1 (Test)</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="all">All Records</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="processingDelay">Delay Between Records (ms)</label>
+                        <input type="number" id="processingDelay" value="500" min="100" max="5000" step="100">
+                    </div>
+                </div>
+
+                <button class="action-button secondary-button" onclick="validateWebhookConnection()">
+                    🔗 Test Connection
+                </button>
+            </div>
+
+            <!-- Processing Controls -->
+            <div class="section">
+                <h2>🚀 Step 3: Process Orders</h2>
+                <div class="control-group">
+                    <button class="action-button" id="processBtn" onclick="processFile()" disabled>
+                        ▶️ Start Matching Orders
                     </button>
                     <button class="action-button secondary-button" id="pauseBtn" onclick="pauseProcessing()" disabled>
                         ⏸️ Pause
                     </button>
-                    <button class="action-button secondary-button" id="exportBtn" onclick="exportResults()" disabled>
-                        💾 Export Results
-                    </button>
                     <button class="action-button danger-button" onclick="clearResults()">
                         🗑️ Clear All
                     </button>
+                    <span class="status-indicator" id="processingStatus">No file loaded</span>
                 </div>
                 
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressBar"></div>
-                    </div>
-                    <p id="progressText">Ready to process Ethoca file...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
                 </div>
+                <p id="progressText">Ready to process Ethoca file...</p>
             </div>
 
             <!-- Statistics -->
@@ -470,11 +431,11 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="matchedRecords">0</div>
-                        <div class="stat-label">Orders Tagged</div>
+                        <div class="stat-label">Matched</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="failedRecords">0</div>
-                        <div class="stat-label">No Match Found</div>
+                        <div class="stat-label">Failed</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="matchRate">0%</div>
@@ -486,32 +447,33 @@
             <!-- Results Table -->
             <div class="section">
                 <h2>📋 Processing Results</h2>
-                <div style="overflow-x: auto;">
-                    <table class="results-table" id="resultsTable">
-                        <thead>
-                            <tr>
-                                <th>Row</th>
-                                <th>Ethoca ID</th>
-                                <th>ARN</th>
-                                <th>Auth Code</th>
-                                <th>Amount</th>
-                                <th>Shopify Order</th>
-                                <th>Tags Applied</th>
-                                <th>Confidence</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="resultsBody">
-                        </tbody>
-                    </table>
-                </div>
+                <button class="action-button secondary-button" id="exportBtn" onclick="exportResults()" disabled>
+                    💾 Export Results to Excel
+                </button>
+                <table class="results-table" id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Row #</th>
+                            <th>Ethoca ID</th>
+                            <th>ARN</th>
+                            <th>Auth Code</th>
+                            <th>Amount</th>
+                            <th>Shopify Order</th>
+                            <th>Tag Applied</th>
+                            <th>Confidence</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                    </tbody>
+                </table>
             </div>
 
             <!-- Processing Log -->
             <div class="section">
                 <h2>📝 Processing Log</h2>
                 <div class="log-container" id="logContainer">
-                    <div class="log-entry info">System ready. Upload Ethoca file to begin automated order matching...</div>
+                    <div class="log-entry info">System ready. Upload Ethoca file to begin...</div>
                 </div>
             </div>
         </div>
@@ -525,61 +487,12 @@
         let isPaused = false;
         let currentProcessIndex = 0;
         
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSavedSettings();
-            setupEventListeners();
-            addLog('🚀 Ethoca-Shopify Order Matcher initialized', 'success');
-            addLog('📋 Upload your Ethoca Excel file to begin automated order matching and tagging', 'info');
-        });
-        
-        function setupEventListeners() {
-            document.getElementById('ethocaFile').addEventListener('change', handleFile);
-            
-            // Auto-save settings
-            ['mesaWebhook', 'batchDelay', 'recordLimit'].forEach(id => {
-                document.getElementById(id).addEventListener('change', saveSettings);
-            });
-        }
-        
-        function loadSavedSettings() {
-            const saved = localStorage.getItem('ethocaMatcherSettings');
-            if (saved) {
-                const settings = JSON.parse(saved);
-                if (settings.batchDelay) {
-                    document.getElementById('batchDelay').value = settings.batchDelay;
-                }
-                if (settings.recordLimit) {
-                    document.getElementById('recordLimit').value = settings.recordLimit;
-                }
-                addLog('⚙️ Loaded saved settings', 'info');
-            }
-        }
-        
-        function saveSettings() {
-            const settings = {
-                mesaWebhook: document.getElementById('mesaWebhook').value,
-                batchDelay: document.getElementById('batchDelay').value,
-                recordLimit: document.getElementById('recordLimit').value
-            };
-            localStorage.setItem('ethocaMatcherSettings', JSON.stringify(settings));
-            
-            const indicator = document.getElementById('settingsSaved');
-            indicator.style.display = 'block';
-            setTimeout(() => {
-                indicator.style.display = 'none';
-            }, 2000);
-            
-            // Update processing status
-            updateProcessingStatus();
-        }
-        
         // File handling
+        document.getElementById('ethocaFile').addEventListener('change', handleFile);
+        
         function handleFile(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
-            addLog(`📁 Loading file: ${file.name}`, 'info');
             
             const fileInfo = document.getElementById('fileInfo');
             fileInfo.innerHTML = `
@@ -597,31 +510,18 @@
                     const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
                     
                     // Parse Ethoca data structure
-                    const headers = [
-                        "Alert Type", "Ethoca ID", "Alert Date/Time", "Alert Age (Hours)", 
-                        "Auth Date/Time", "Auth Code", "Amount", "Currency", "Card number", 
-                        "SHA1 Hashed Card Number", "Merchant", "Merchant Descriptor/MID", 
-                        "Issuer Name", "Source", "Transaction Type", "Outcome", 
-                        "Refunded/Not Settled", "Partially Stopped Amount", "Comments", 
-                        "Existing Outcome", "Existing Comments", "Outcome Updated Date/Time", 
-                        "Outcome Updated By", "ARN", "Transaction ID", "Chargeback Reason Code", 
-                        "Chargeback Amount", "Chargeback Currency", "BIN8", "Shopify Order ID"
-                    ];
-                    
+                    const headers = rawData[0];
                     ethocaData = rawData.slice(1).map((row, index) => {
                         const record = { row_number: index + 2 };
                         headers.forEach((header, colIndex) => {
                             record[header] = row[colIndex] || '';
                         });
                         return record;
-                    }).filter(record => record['Ethoca ID']); // Filter out empty rows
+                    });
                     
                     document.getElementById('totalRecords').textContent = ethocaData.length;
-                    addLog(`✅ Loaded ${ethocaData.length} chargeback records`, 'success');
-                    addLog(`📊 Data includes: ARN (${countNonEmpty('ARN')}), Auth Codes (${countNonEmpty('Auth Code')}), Amounts (${countNonEmpty('Amount')})`, 'info');
-                    
-                    // Enable processing button and update status
                     document.getElementById('processBtn').disabled = false;
+                    addLog(`✅ Loaded ${ethocaData.length} chargeback records from ${file.name}`, 'success');
                     updateProcessingStatus();
                     
                 } catch (error) {
@@ -629,10 +529,6 @@
                 }
             };
             reader.readAsBinaryString(file);
-        }
-        
-        function countNonEmpty(field) {
-            return ethocaData.filter(record => record[field] && record[field].toString().trim()).length;
         }
         
         // Main processing function
@@ -644,34 +540,31 @@
             
             const mesaWebhook = document.getElementById('mesaWebhook').value.trim();
             if (!mesaWebhook) {
-                addLog('❌ Please configure the MESA webhook URL.', 'error');
+                addLog('❌ Please enter MESA Web Request URL', 'error');
                 return;
             }
             
-            // Determine number of records to process
-            const recordLimit = document.getElementById('recordLimit').value;
-            const recordsToProcess = recordLimit === 'all' ? ethocaData.length : Math.min(parseInt(recordLimit), ethocaData.length);
-            
-            // Start processing
             isProcessing = true;
             isPaused = false;
-            currentProcessIndex = 0;
-            processedResults = [];
-            
             updateUI(true);
-            addLog('🚀 Starting batch processing of Ethoca records...', 'info');
-            addLog(`📊 Processing ${recordsToProcess} of ${ethocaData.length} total records`, 'info');
-            addLog(`📡 Using MESA webhook: ${mesaWebhook.substring(0, 50)}...`, 'info');
             
-            let matched = 0, failed = 0, processed = 0;
+            const recordLimit = document.getElementById('recordLimit').value;
+            const recordsToProcess = recordLimit === 'all' ? ethocaData.length : Math.min(parseInt(recordLimit), ethocaData.length);
+            const delay = parseInt(document.getElementById('processingDelay').value);
             
-            for (let i = 0; i < recordsToProcess && isProcessing; i++) {
-                // Handle pause
-                while (isPaused && isProcessing) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
+            addLog(`🚀 Starting batch processing of ${recordsToProcess} records...`, 'info');
+            
+            let matched = 0, failed = 0;
+            
+            for (let i = currentProcessIndex; i < recordsToProcess; i++) {
+                if (!isProcessing) {
+                    addLog('⏹️ Processing stopped by user', 'warning');
+                    break;
                 }
                 
-                if (!isProcessing) break;
+                while (isPaused) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
                 
                 currentProcessIndex = i;
                 const record = ethocaData[i];
@@ -680,36 +573,34 @@
                 const progress = ((i + 1) / recordsToProcess) * 100;
                 document.getElementById('progressBar').style.width = progress + '%';
                 document.getElementById('progressText').textContent = 
-                    `Processing ${i + 1}/${recordsToProcess}: ${record['Ethoca ID']}`;
+                    `Processing record ${i + 1} of ${recordsToProcess} - ${record['Ethoca ID']}`;
                 
-                // Update row status
                 updateRowStatus(i, 'processing');
                 
                 try {
-                    addLog(`🔍 Processing record ${i + 1}/${recordsToProcess}: ${record['Ethoca ID']} (ARN: ${record['ARN']})`, 'info');
-                    
                     const result = await processRecord(record, mesaWebhook);
                     processedResults.push(result);
-                    processed++;
                     
                     if (result.status === 'matched') {
                         matched++;
-                        updateRowStatus(i, 'matched');
-                        addLog(`✅ SUCCESS: Order tagged - ${result.ethoca_id} → ${result.shopify_order_name} (Tag: ${result.tag_applied})`, 'success');
+                        addLog(`✅ Match found: ${result.ethoca_id} → Order ${result.shopify_order_name}`, 'success');
                     } else {
                         failed++;
-                        updateRowStatus(i, 'failed');
-                        addLog(`⚠️ No match found for ${result.ethoca_id}: ${result.error || 'No matching order found'}`, 'warning');
+                        addLog(`❌ No match: ${result.ethoca_id} - ${result.error || 'No matching order found'}`, 'error');
                     }
                     
-                    updateStatistics(processed, matched, failed);
+                    updateRowStatus(i, result.status);
                     updateResultsTable();
+                    updateStatistics(matched, failed, i + 1);
+                    
+                    // Delay between records
+                    if (i < recordsToProcess - 1) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
                     
                 } catch (error) {
                     failed++;
-                    processed++;
-                    updateRowStatus(i, 'failed');
-                    addLog(`❌ ERROR processing ${record['Ethoca ID']}: ${error.message}`, 'error');
+                    addLog(`❌ Processing error for ${record['Ethoca ID']}: ${error.message}`, 'error');
                     
                     processedResults.push({
                         row_number: record.row_number,
@@ -723,38 +614,25 @@
                         status: 'failed',
                         error: error.message
                     });
-                }
-                
-                // Delay between requests to prevent rate limiting
-                const delay = parseFloat(document.getElementById('batchDelay').value) * 1000;
-                if (delay > 0 && i < recordsToProcess - 1) {
-                    await new Promise(resolve => setTimeout(resolve, delay));
+                    
+                    updateRowStatus(i, 'failed');
+                    updateResultsTable();
+                    updateStatistics(matched, failed, i + 1);
                 }
             }
             
-            // Complete processing
             isProcessing = false;
+            currentProcessIndex = 0;
             updateUI(false);
             
-            if (processed === recordsToProcess) {
-                if (recordLimit === 'all') {
-                    addLog(`🎉 Processing complete! ${matched} orders tagged, ${failed} no matches found.`, 'success');
-                } else {
-                    addLog(`🎉 Limited processing complete! ${matched} orders tagged, ${failed} no matches found (${recordsToProcess}/${ethocaData.length} records processed).`, 'success');
-                }
-                addLog(`📊 Success rate: ${Math.round((matched / processed) * 100)}%`, 'info');
-            } else {
-                addLog(`⏹️ Processing stopped. Processed: ${processed}/${recordsToProcess}`, 'warning');
-            }
-            
+            addLog(`✅ Processing complete! ${matched} matches, ${failed} failures.`, 'success');
             updateProcessingStatus();
         }
         
-        // Process individual record
-        async function processRecord(record, mesaWebhook) {
-            // Prepare MESA webhook payload
+        // UPDATED: Process individual record using Web Request API
+        async function processRecord(record, mesaWebRequestUrl) {
+            // Prepare payload for MESA Web Request
             const payload = {
-                action: 'search_order',
                 ethoca_data: {
                     ethoca_id: record['Ethoca ID'],
                     arn: record['ARN'],
@@ -764,45 +642,71 @@
                     auth_date: record['Auth Date/Time'],
                     alert_date: record['Alert Date/Time'],
                     transaction_id: record['Transaction ID'],
-                    issuer: record['Issuer Name']
+                    issuer: record['Issuer Name'],
+                    card_last4: String(record['Card number'] || '').slice(-4),
+                    card_iin: String(record['BIN8'] || '').substring(0, 6)
                 }
             };
             
-            // Use local proxy to avoid CORS issues
-            const proxyRequest = {
-                webhook_url: mesaWebhook,
-                payload: payload
-            };
+            console.log('Sending to MESA:', JSON.stringify(payload, null, 2));
             
-            // Call local proxy server which forwards to MESA
-            const response = await fetch('/proxy-webhook', {
+            // CHANGED: Direct call to MESA Web Request endpoint (no proxy needed)
+            const response = await fetch(mesaWebRequestUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(proxyRequest)
+                body: JSON.stringify(payload)
             });
             
+            console.log('MESA response status:', response.status, response.statusText);
+            
+            // Get response text first to see what we're getting
+            const responseText = await response.text();
+            console.log('MESA response text:', responseText);
+            
             if (!response.ok) {
-                throw new Error(`Proxy server error: ${response.status} ${response.statusText}`);
+                throw new Error(`MESA API error: ${response.status} ${response.statusText} - ${responseText}`);
             }
             
-            const result = await response.json();
+            // Try to parse as JSON
+            let result;
+            try {
+                result = JSON.parse(responseText);
+                console.log('MESA parsed result:', JSON.stringify(result, null, 2));
+            } catch (e) {
+                throw new Error(`Invalid JSON response from MESA: ${responseText}`);
+            }
             
-            // MESA webhook processing is asynchronous, so we simulate success
-            // In production, the actual matching and tagging happens in MESA automation
+            // CHANGED: Use actual response data from MESA
             return {
                 row_number: record.row_number,
                 ethoca_id: record['Ethoca ID'],
                 arn: record['ARN'],
                 auth_code: record['Auth Code'],
                 amount: record['Amount'],
-                shopify_order_name: 'Processing via MESA...', // Updated by MESA automation
-                tag_applied: `mesa:ethoca:orderMatch:${record['ARN']}`,
-                confidence: record['ARN'] ? 95 : 0,
-                status: record['ARN'] && result.success !== false ? 'matched' : 'failed',
-                error: result.success === false ? result.error : (record['ARN'] ? '' : 'No ARN available for matching')
+                shopify_order_name: result.order_name || '',
+                tag_applied: result.tag_applied || '',
+                confidence: result.confidence || 0,
+                status: result.matched ? 'matched' : 'failed',
+                error: result.error || ''
             };
+        }
+        
+        // Pause/Resume functionality
+        function pauseProcessing() {
+            if (!isProcessing) return;
+            
+            isPaused = !isPaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+            
+            if (isPaused) {
+                pauseBtn.innerHTML = '▶️ Resume';
+                addLog('⏸️ Processing paused', 'warning');
+            } else {
+                pauseBtn.innerHTML = '⏸️ Pause';
+                addLog('▶️ Processing resumed', 'info');
+            }
         }
         
         // UI update functions
@@ -849,35 +753,22 @@
                     const row = tbody.children[index];
                     row.cells[5].textContent = result.shopify_order_name || '-';
                     row.cells[6].textContent = result.tag_applied || '-';
-                    row.cells[7].textContent = result.confidence ? `${result.confidence}%` : '-';
+                    row.cells[7].textContent = result.confidence + '%';
                 }
             });
         }
         
-        function updateStatistics(processed, matched, failed) {
+        function updateStatistics(matched, failed, processed) {
+            const total = matched + failed;
+            const rate = total > 0 ? Math.round((matched / total) * 100) : 0;
+            
             document.getElementById('processedRecords').textContent = processed;
             document.getElementById('matchedRecords').textContent = matched;
             document.getElementById('failedRecords').textContent = failed;
-            
-            const rate = processed > 0 ? Math.round((matched / processed) * 100) : 0;
             document.getElementById('matchRate').textContent = rate + '%';
         }
         
-        // Control functions
-        function pauseProcessing() {
-            if (isProcessing) {
-                isPaused = !isPaused;
-                const btn = document.getElementById('pauseBtn');
-                if (isPaused) {
-                    btn.innerHTML = '▶️ Resume';
-                    addLog('⏸️ Processing paused by user', 'warning');
-                } else {
-                    btn.innerHTML = '⏸️ Pause';
-                    addLog('▶️ Processing resumed', 'info');
-                }
-            }
-        }
-        
+        // Export results to Excel
         function exportResults() {
             if (processedResults.length === 0) {
                 addLog('❌ No results to export', 'error');
@@ -913,19 +804,6 @@
                 const ws = XLSX.utils.json_to_sheet(exportData);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, 'Ethoca Processing Results');
-                
-                // Style the header row
-                const range = XLSX.utils.decode_range(ws['!ref']);
-                for (let col = range.s.c; col <= range.e.c; col++) {
-                    const headerCell = XLSX.utils.encode_cell({ r: 0, c: col });
-                    if (ws[headerCell]) {
-                        ws[headerCell].s = {
-                            font: { bold: true },
-                            fill: { fgColor: { rgb: "4472C4" } },
-                            font: { color: { rgb: "FFFFFF" } }
-                        };
-                    }
-                }
                 
                 // Export file with timestamp
                 const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
@@ -1031,26 +909,36 @@
         function validateWebhookConnection() {
             const webhook = document.getElementById('mesaWebhook').value.trim();
             if (!webhook) {
-                addLog('❌ No webhook URL configured', 'error');
+                addLog('❌ No Web Request URL configured', 'error');
                 return;
             }
             
-            addLog('🔗 Testing webhook connection...', 'info');
+            addLog('🔗 Testing MESA Web Request connection...', 'info');
             
             fetch(webhook, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'test_connection' })
+                body: JSON.stringify({ 
+                    ethoca_data: {
+                        ethoca_id: 'TEST_CONNECTION',
+                        arn: '000000000000000',
+                        amount: 0
+                    }
+                })
             })
             .then(response => {
                 if (response.ok) {
-                    addLog('✅ Webhook connection successful', 'success');
+                    return response.json();
                 } else {
-                    addLog(`⚠️ Webhook responded with status ${response.status}`, 'warning');
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
             })
+            .then(data => {
+                addLog('✅ MESA Web Request connection successful', 'success');
+                addLog(`📡 Response received: ${JSON.stringify(data)}`, 'info');
+            })
             .catch(error => {
-                addLog(`❌ Webhook connection failed: ${error.message}`, 'error');
+                addLog(`❌ Connection failed: ${error.message}`, 'error');
             });
         }
         
@@ -1102,7 +990,7 @@
         });
         
         // Final initialization
-        addLog('⚡ Enhanced Ethoca-Shopify Order Matcher ready', 'success');
+        addLog('⚡ Ethoca-Shopify Order Matcher ready (Web Request API)', 'success');
         addLog('💡 Tip: Use Ctrl+Enter to start, Space to pause, Escape to clear', 'info');
     </script>
 </body>
