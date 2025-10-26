@@ -605,7 +605,7 @@
                     processedResults.push({
                         row_number: record.row_number,
                         ethoca_id: record['Ethoca ID'],
-                        arn: record['ARN'],
+                        arn: record['Transaction ID'] || record['ARN'],
                         auth_code: record['Auth Code'],
                         amount: record['Amount'],
                         shopify_order_name: '',
@@ -635,7 +635,7 @@
             const payload = {
                 ethoca_data: {
                     ethoca_id: record['Ethoca ID'],
-                    arn: record['ARN'],
+                    arn: record['Transaction ID'] || record['ARN'],
                     auth_code: record['Auth Code'],
                     amount: parseFloat(record['Amount']) || 0,
                     currency: record['Currency'],
@@ -682,7 +682,7 @@
             return {
                 row_number: record.row_number,
                 ethoca_id: record['Ethoca ID'],
-                arn: record['ARN'],
+                arn: record['Transaction ID'] || record['ARN'],
                 auth_code: record['Auth Code'],
                 amount: record['Amount'],
                 shopify_order_name: result.order_name || '',
